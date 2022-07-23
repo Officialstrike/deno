@@ -32,6 +32,8 @@
     PromisePrototypeCatch,
     SymbolFor,
   } = window.__bootstrap.primordials;
+  const { headersFromHeaderList, headerListFromHeaders, fillHeaders } =
+    window.__bootstrap.headers;
 
   webidl.converters["sequence<DOMString> or DOMString"] = (V, opts) => {
     // Union for (sequence<DOMString> or DOMString)
@@ -146,7 +148,8 @@
       return this[_bufferedAmount];
     }
 
-    constructor(url, protocols = []) {
+    // constructor(url, protocols = []) {
+    constructor(url, options) {
       super();
       this[webidl.brand] = webidl.brand;
       const prefix = "Failed to construct 'WebSocket'";
@@ -157,13 +160,10 @@
         prefix,
         context: "Argument 1",
       });
-      protocols = webidl.converters["sequence<DOMString> or DOMString"](
-        protocols,
-        {
-          prefix,
-          context: "Argument 2",
-        },
-      );
+      options = webidl.converters.WebSocketStreamOptions(options, {
+        prefix,
+        context: "Argument 2",
+      });
 
       let wsURL;
 
@@ -189,20 +189,13 @@
 
       this[_url] = wsURL.href;
 
-      core.opSync(
-        "op_ws_check_permission_and_cancel_handle",
-        this[_url],
-        false,
-      );
-
-      if (typeof protocols === "string") {
-        protocols = [protocols];
-      }
-
       if (
-        protocols.length !==
+        options.protocols.length !==
           new Set(
-            ArrayPrototypeMap(protocols, (p) => StringPrototypeToLowerCase(p)),
+            ArrayPrototypeMap(
+              options.protocols,
+              (p) => StringPrototypeToLowerCase(p),
+            ),
           ).size
       ) {
         throw new DOMException(
@@ -211,24 +204,24 @@
         );
       }
 
-      if (
-        ArrayPrototypeSome(
-          protocols,
-          (protocol) =>
-            !RegExpPrototypeTest(HTTP_TOKEN_CODE_POINT_RE, protocol),
-        )
-      ) {
-        throw new DOMException(
-          "Invalid protocol value.",
-          "SyntaxError",
-        );
+      const headers = headersFromHeaderList([], "request");
+      if (options.headers !== undefined) {
+        fillHeaders(headers, options.headers);
       }
+
+      const cancelRid = core.opSync(
+        "op_ws_check_permission_and_cancel_handle",
+        this[_url],
+        true
+      );
 
       PromisePrototypeThen(
         core.opAsync(
           "op_ws_create",
-          wsURL.href,
-          ArrayPrototypeJoin(protocols, ", "),
+          this[_url],
+          options.protocols ? ArrayPrototypeJoin(options.protocols, ", ") : "",
+          cancelRid,
+          headerListFromHeaders(headers)
         ),
         (create) => {
           this[_rid] = create.rid;

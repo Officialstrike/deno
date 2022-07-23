@@ -1,12 +1,42 @@
 # Deno
 
-[![Build Status - Cirrus][]][Build status] [![Twitter handle][]][Twitter badge]
+[![Build Status - Cirrus][]][build status] [![Twitter handle][]][twitter badge]
 [![Discord Chat](https://img.shields.io/discord/684898665143206084?logo=discord&style=social)](https://discord.gg/deno)
 
 <img align="right" src="https://deno.land/logo.svg" height="150px" alt="the deno mascot dinosaur standing in the rain">
 
 Deno is a _simple_, _modern_ and _secure_ runtime for **JavaScript** and
 **TypeScript** that uses V8 and is built in Rust.
+
+**This is a Deno fork that modifies the WebSocket interface to support the same functionality as WebsocketStream but preserving the Websocket interface's stability**
+
+### Using the fork
+
+```ts
+const socket = new WebSocket("wss://ws.postman-echo.com/raw", {
+  protocols: ["custom-protocol"],
+  headers: {
+    origin: "https://example.com",
+    cookie: `custom_cookie=here`,
+  },
+});
+// then you would just use the WebSocket api like normal.
+socket.addEventListener("open", (event) => {
+  socket.send("Hello Server!");
+});
+
+socket.addEventListener("message", function (event) {
+  console.log("Message from server ", event.data);
+});
+
+socket.addEventListener("close", (event) => {
+  console.log("The connection has been closed successfully.");
+});
+
+socket.addEventListener("error", function (event) {
+  console.log("WebSocket error: ", event);
+});
+```
 
 ### Features
 
@@ -98,7 +128,7 @@ We appreciate your help!
 To contribute, please read our
 [contributing instructions](https://deno.land/manual/contributing).
 
-[Build Status - Cirrus]: https://github.com/denoland/deno/workflows/ci/badge.svg?branch=main&event=push
-[Build status]: https://github.com/denoland/deno/actions
-[Twitter badge]: https://twitter.com/intent/follow?screen_name=deno_land
-[Twitter handle]: https://img.shields.io/twitter/follow/deno_land.svg?style=social&label=Follow
+[build status - cirrus]: https://github.com/denoland/deno/workflows/ci/badge.svg?branch=main&event=push
+[build status]: https://github.com/denoland/deno/actions
+[twitter badge]: https://twitter.com/intent/follow?screen_name=deno_land
+[twitter handle]: https://img.shields.io/twitter/follow/deno_land.svg?style=social&label=Follow

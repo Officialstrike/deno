@@ -40,7 +40,7 @@ interface WebSocketEventMap {
  * If you are looking to create a WebSocket server, please take a look at `Deno.upgradeWebSocket()`.
  */
 declare class WebSocket extends EventTarget {
-  constructor(url: string | URL, protocols?: string | string[]);
+  constructor(url: string, options?: {});
 
   static readonly CLOSED: number;
   static readonly CLOSING: number;
@@ -94,22 +94,22 @@ declare class WebSocket extends EventTarget {
   addEventListener<K extends keyof WebSocketEventMap>(
     type: K,
     listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any,
-    options?: boolean | AddEventListenerOptions,
+    options?: boolean | AddEventListenerOptions
   ): void;
   addEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions,
+    options?: boolean | AddEventListenerOptions
   ): void;
   removeEventListener<K extends keyof WebSocketEventMap>(
     type: K,
     listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any,
-    options?: boolean | EventListenerOptions,
+    options?: boolean | EventListenerOptions
   ): void;
   removeEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
-    options?: boolean | EventListenerOptions,
+    options?: boolean | EventListenerOptions
   ): void;
 }
 
