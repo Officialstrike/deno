@@ -129,7 +129,8 @@
         fillHeaders(headers, options.headers);
       }
 
-      const cancelRid = ops.op_ws_check_permission_and_cancel_handle(
+      const cancelRid = core.opSync(
+        "op_ws_check_permission_and_cancel_handle",
         this[_url],
         true,
       );
